@@ -36,5 +36,6 @@ def create_embedder(spec: dict[str, Any]) -> Embedder:
         model=model,
         price_per_1m_tokens=float(spec.get("price_per_1m_tokens") or 0),
         query_prefix=spec.get("query_prefix"),
+        document_prefix=spec.get("document_prefix"),
         normalize=bool(spec.get("normalize", True)),
     )

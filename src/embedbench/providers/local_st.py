@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 import numpy as np
 
 from embedbench.providers.base import Embedder, whitespace_tokens
+
+LOGGER = logging.getLogger("embedbench")
 
 
 class SentenceTransformerEmbedder(Embedder):
@@ -17,6 +20,7 @@ class SentenceTransformerEmbedder(Embedder):
         model: str,
         price_per_1m_tokens: float = 0.0,
         query_prefix: str | None = None,
+        document_prefix: str | None = None,
         normalize: bool = True,
         model_obj: Any | None = None,
     ) -> None:
@@ -26,19 +30,23 @@ class SentenceTransformerEmbedder(Embedder):
             price_per_1m_tokens=price_per_1m_tokens,
             api_key_env=None,
             query_prefix=query_prefix,
+            document_prefix=document_prefix,
             normalize=normalize,
         )
         self._model = model_obj
 
     def _get_model(self) -> Any:
         if self._model is None:
+            import torch
             from sentence_transformers import SentenceTransformer
 
-            self._model = SentenceTransformer(self.model)
+            device = "cuda" if torch.cuda.is_available() else "cpu"
+            LOGGER.info("loading %s on %s", self.model, device)
+            self._model = SentenceTransformer(self.model, device=device)
         return self._model
 
     def embed_documents(self, texts: list[str], *, batch_size: int) -> np.ndarray:
-        return self._embed(texts, batch_size=batch_size)
+        return self._embed(self._prefixed_documents(texts), batch_size=batch_size)
 
     def embed_queries(self, texts: list[str], *, batch_size: int) -> np.ndarray:
         return self._embed(self._prefixed(texts), batch_size=batch_size)

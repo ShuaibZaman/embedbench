@@ -17,6 +17,7 @@ class VoyageEmbedder(Embedder):
         model: str,
         price_per_1m_tokens: float = 0.0,
         query_prefix: str | None = None,
+        document_prefix: str | None = None,
         normalize: bool = True,
         api_key_env: str = "VOYAGE_API_KEY",
         client: Any | None = None,
@@ -27,6 +28,7 @@ class VoyageEmbedder(Embedder):
             price_per_1m_tokens=price_per_1m_tokens,
             api_key_env=api_key_env,
             query_prefix=query_prefix,
+            document_prefix=document_prefix,
             normalize=normalize,
         )
         self._client = client

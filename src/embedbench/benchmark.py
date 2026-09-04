@@ -22,7 +22,7 @@ from embedbench.providers.factory import create_embedder
 from embedbench.report import write_report, write_spotcheck
 
 LOGGER = logging.getLogger("embedbench")
-DEFAULT_MODELS = ("bge-small", "minilm")
+DEFAULT_MODELS = ("bge-small", "minilm", "e5-small", "bge-base")
 
 
 def hardware_info() -> dict[str, str]:
@@ -139,6 +139,7 @@ def benchmark_model(
         "tokens_used": embedder.tokens_used,
         "cost_usd": cost,
         "price_per_1m_tokens": embedder.price_per_1m_tokens,
+        "embed_dim": int(corpus_vectors.shape[1]) if corpus_vectors.size else 0,
         **hw,
         "rankings": rankings,
     }
@@ -187,7 +188,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--models",
         default=None,
-        help="Comma-separated model ids. Default: bge-small,minilm (local only).",
+        help="Comma-separated model ids. Default: bge-small,minilm,e5-small,bge-base (local only).",
     )
     parser.add_argument("--k", type=int, default=10)
     parser.add_argument("--batch-size", type=int, default=32)
@@ -220,6 +221,7 @@ def main(argv: list[str] | None = None) -> int:
         LOGGER.info("wrote %s", paths["csv"])
         LOGGER.info("wrote %s", paths["mrr_vs_cost"])
         LOGGER.info("wrote %s", paths["latency_vs_mrr"])
+        LOGGER.info("wrote %s", paths["metrics_comparison"])
     if args.spot_check and rows:
         _print_spot_check(dataset, rows[0], n=args.spot_check)
         first = rows[0]

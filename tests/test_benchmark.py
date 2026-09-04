@@ -89,6 +89,7 @@ def test_run_benchmark_skips_unavailable(tmp_path: Path) -> None:
     assert row["model_id"] == "fake"
     assert row["n_queries"] == 3
     assert "mrr" in row
+    assert row["embed_dim"] == 4
     assert ready.doc_calls == 1
 
 
@@ -97,6 +98,8 @@ def test_real_models_yaml_has_local_defaults() -> None:
     ids = [spec["id"] for spec in specs]
     assert "bge-small" in ids
     assert "minilm" in ids
+    assert "e5-small" in ids
+    assert "bge-base" in ids
     assert "voyage-3" not in ids
 
 

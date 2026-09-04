@@ -45,6 +45,7 @@ class Embedder(ABC):
         price_per_1m_tokens: float = 0.0,
         api_key_env: str | None = None,
         query_prefix: str | None = None,
+        document_prefix: str | None = None,
         normalize: bool = True,
     ) -> None:
         self.id = id
@@ -52,6 +53,7 @@ class Embedder(ABC):
         self.price_per_1m_tokens = price_per_1m_tokens
         self.api_key_env = api_key_env
         self.query_prefix = query_prefix
+        self.document_prefix = document_prefix
         self.normalize = normalize
         self._tokens_used = 0
 
@@ -81,6 +83,12 @@ class Embedder(ABC):
         if not self.query_prefix:
             return texts
         prefix = self.query_prefix
+        return [f"{prefix}{text}" for text in texts]
+
+    def _prefixed_documents(self, texts: list[str]) -> list[str]:
+        if not self.document_prefix:
+            return texts
+        prefix = self.document_prefix
         return [f"{prefix}{text}" for text in texts]
 
     def _maybe_normalize(self, vectors: np.ndarray) -> np.ndarray:

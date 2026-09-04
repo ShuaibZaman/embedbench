@@ -25,6 +25,7 @@ ROWS = [
         "tokens_used": 100,
         "cost_usd": 0.0,
         "price_per_1m_tokens": 0.0,
+        "embed_dim": 384,
         "device": "cpu",
         "processor": "test-cpu",
         "platform": "test",
@@ -46,6 +47,7 @@ ROWS = [
         "tokens_used": 120,
         "cost_usd": 0.0,
         "price_per_1m_tokens": 0.0,
+        "embed_dim": 384,
         "device": "cpu",
         "processor": "test-cpu",
         "platform": "test",
@@ -61,11 +63,21 @@ def test_write_report_creates_csv_and_pngs(tmp_path: Path) -> None:
     assert (tmp_path / "benchmark_latest.csv").exists()
     assert paths["mrr_vs_cost"].exists()
     assert paths["latency_vs_mrr"].exists()
+    assert paths["metrics_comparison"].exists()
     frame = results_frame(ROWS)
     assert list(frame["model_id"]) == ["minilm", "bge-small"]
     text = csv_path.read_text(encoding="utf-8")
     assert "mrr" in text
     assert "minilm" in text
+    assert "embed_dim" in text
+
+
+def test_write_report_merges_by_model_id(tmp_path: Path) -> None:
+    write_report([ROWS[0]], tmp_path, day=date(2026, 9, 4))
+    write_report([ROWS[1]], tmp_path, day=date(2026, 9, 4))
+    latest = (tmp_path / "benchmark_latest.csv").read_text(encoding="utf-8")
+    assert "minilm" in latest
+    assert "bge-small" in latest
 
 
 def test_write_spotcheck(tmp_path: Path) -> None:

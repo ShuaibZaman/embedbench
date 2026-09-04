@@ -84,15 +84,31 @@ def test_sentence_transformers_query_prefix_and_usage() -> None:
         id="bge",
         model="stub",
         query_prefix="query: ",
+        document_prefix="passage: ",
         model_obj=Capture(),
     )
     queries = embedder.embed_queries(["hello"], batch_size=4)
-    assert seen == [["query: hello"]]
+    docs = embedder.embed_documents(["world"], batch_size=4)
+    assert seen == [["query: hello"], ["passage: world"]]
     assert queries.shape == (1, 3)
-    assert embedder.tokens_used == 2  # whitespace tokens of the prefixed query
+    assert docs.shape == (1, 3)
+    assert embedder.tokens_used == 4  # whitespace tokens of prefixed query + doc
 
 
-def test_factory_openai_and_st() -> None:
+def test_factory_passes_document_prefix() -> None:
+    st = create_embedder(
+        {
+            "id": "e5-small",
+            "provider": "sentence_transformers",
+            "model": "intfloat/e5-small-v2",
+            "query_prefix": "query: ",
+            "document_prefix": "passage: ",
+        }
+    )
+    assert isinstance(st, SentenceTransformerEmbedder)
+    assert st.query_prefix == "query: "
+    assert st.document_prefix == "passage: "
+
     oai = create_embedder(
         {
             "id": "openai-3-small",
