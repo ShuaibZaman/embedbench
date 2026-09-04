@@ -1,0 +1,34 @@
+[project]
+name = "embedbench"
+version = "0.1.0"
+description = "Reproducible side-by-side benchmark of embedding models on a fixed retrieval task — latency, cost, and accuracy."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy",
+    "pandas",
+    "matplotlib",
+    "pyyaml",
+    "httpx",
+    "python-dotenv",
+    "openai",
+    "voyageai",
+    "cohere",
+    "sentence-transformers",
+    "torch",
+]
+
+[dependency-groups]
+dev = ["pytest"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.uv]
+package = true
