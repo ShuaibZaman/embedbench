@@ -86,6 +86,7 @@ def test_load_beir_mini_fixture() -> None:
     assert dataset.corpus_ids == ["d0", "d1", "d2", "d3"]
     assert dataset.corpus_texts[0].startswith("Alpha paper")
     assert dataset.query_ids == ["q0", "q1", "q2"]
+    assert "q-unlabeled" not in dataset.query_ids
     assert dataset.qrels["q0"] == {"d0"}
     assert dataset.qrels["q1"] == {"d2"}
     subset = dataset.with_max_queries(1)

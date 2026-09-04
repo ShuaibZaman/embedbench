@@ -61,12 +61,21 @@ def embed_corpus_cached(
         meta = json.loads(meta_path.read_text(encoding="utf-8"))
         if meta.get("n") == len(texts) and meta.get("model") == embedder.model:
             LOGGER.info("corpus cache hit for %s", embedder.id)
+            embedder._tokens_used += int(meta.get("tokens_used") or 0)
             return np.load(npy_path)
     LOGGER.info("embedding %s corpus (%s docs)", embedder.id, len(texts))
+    before = embedder.tokens_used
     vectors = embedder.embed_documents(texts, batch_size=batch_size)
     np.save(npy_path, vectors)
     meta_path.write_text(
-        json.dumps({"n": len(texts), "model": embedder.model, "dim": int(vectors.shape[1])}),
+        json.dumps(
+            {
+                "n": len(texts),
+                "model": embedder.model,
+                "dim": int(vectors.shape[1]),
+                "tokens_used": embedder.tokens_used - before,
+            }
+        ),
         encoding="utf-8",
     )
     return vectors

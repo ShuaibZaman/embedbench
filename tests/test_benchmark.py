@@ -108,3 +108,4 @@ def test_corpus_cache_avoids_second_embed(tmp_path: Path) -> None:
     run_benchmark([], dataset, k=2, batch_size=2, cache_dir=tmp_path / "cache", embedders=[second])
     assert first.doc_calls == 1
     assert second.doc_calls == 0
+    assert second.tokens_used >= first.tokens_used - 20

@@ -90,13 +90,24 @@ def load_beir_folder(folder: Path, *, split: str = "test", name: str = "scifact"
                 continue
             qrels.setdefault(str(qid), set()).add(str(doc_id))
 
+    kept_ids: list[str] = []
+    kept_texts: list[str] = []
+    kept_qrels: dict[str, set[str]] = {}
+    for qid, text in zip(query_ids, query_texts, strict=True):
+        rel = qrels.get(qid, set())
+        if not rel:
+            continue
+        kept_ids.append(qid)
+        kept_texts.append(text)
+        kept_qrels[qid] = rel
+
     return RetrievalDataset(
         name=name,
         corpus_ids=corpus_ids,
         corpus_texts=corpus_texts,
-        query_ids=query_ids,
-        query_texts=query_texts,
-        qrels=qrels,
+        query_ids=kept_ids,
+        query_texts=kept_texts,
+        qrels=kept_qrels,
     )
 
 
