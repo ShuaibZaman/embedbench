@@ -19,6 +19,7 @@ from embedbench.index import ranked_doc_ids
 from embedbench.metrics import embedding_cost, percentile, retrieval_metrics
 from embedbench.providers.base import Embedder
 from embedbench.providers.factory import create_embedder
+from embedbench.report import write_report, write_spotcheck
 
 LOGGER = logging.getLogger("embedbench")
 DEFAULT_MODELS = ("bge-small", "minilm")
@@ -205,8 +206,22 @@ def main(argv: list[str] | None = None) -> int:
     )
     public_rows = [{k: v for k, v in row.items() if k != "rankings"} for row in rows]
     print(json.dumps({"results": public_rows, "skipped": skipped}, indent=2))
+    if rows:
+        paths = write_report(rows, args.out_dir)
+        LOGGER.info("wrote %s", paths["csv"])
+        LOGGER.info("wrote %s", paths["mrr_vs_cost"])
+        LOGGER.info("wrote %s", paths["latency_vs_mrr"])
     if args.spot_check and rows:
         _print_spot_check(dataset, rows[0], n=args.spot_check)
+        first = rows[0]
+        write_spotcheck(
+            args.out_dir / "spotcheck.md",
+            model_id=first["model_id"],
+            query_id=dataset.query_ids[0],
+            query_text=dataset.query_texts[0],
+            gold=dataset.qrels.get(dataset.query_ids[0], set()),
+            top_k=first["rankings"][0],
+        )
     return 0 if rows else 1
 
 

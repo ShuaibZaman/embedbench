@@ -1,0 +1,32 @@
+# List prices as of 2026-09 (USD per 1M tokens). Update when providers change rates.
+models:
+  - id: openai-3-small
+    provider: openai
+    model: text-embedding-3-small
+    price_per_1m_tokens: 0.02
+  - id: openai-3-large
+    provider: openai
+    model: text-embedding-3-large
+    price_per_1m_tokens: 0.13
+  - id: voyage-3-lite
+    provider: voyage
+    model: voyage-3-lite
+    price_per_1m_tokens: 0.02
+  # Optional premium row — uncomment to include:
+  # - id: voyage-3
+  #   provider: voyage
+  #   model: voyage-3
+  #   price_per_1m_tokens: 0.06
+  - id: cohere-embed-v3
+    provider: cohere
+    model: embed-english-v3.0
+    price_per_1m_tokens: 0.10
+  - id: bge-small
+    provider: sentence_transformers
+    model: BAAI/bge-small-en-v1.5
+    price_per_1m_tokens: 0
+    query_prefix: "Represent this sentence for searching relevant passages: "
+  - id: minilm
+    provider: sentence_transformers
+    model: sentence-transformers/all-MiniLM-L6-v2
+    price_per_1m_tokens: 0

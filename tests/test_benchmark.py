@@ -92,6 +92,14 @@ def test_run_benchmark_skips_unavailable(tmp_path: Path) -> None:
     assert ready.doc_calls == 1
 
 
+def test_real_models_yaml_has_local_defaults() -> None:
+    specs = load_model_specs(Path("configs/models.yaml"))
+    ids = [spec["id"] for spec in specs]
+    assert "bge-small" in ids
+    assert "minilm" in ids
+    assert "voyage-3" not in ids
+
+
 def test_corpus_cache_avoids_second_embed(tmp_path: Path) -> None:
     dataset = load_beir_folder(FIXTURE, split="test", name="mini")
     first = FakeEmbedder()
