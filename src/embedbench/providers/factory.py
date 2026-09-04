@@ -5,11 +5,15 @@ from __future__ import annotations
 from typing import Any
 
 from embedbench.providers.base import Embedder
+from embedbench.providers.cohere import CohereEmbedder
 from embedbench.providers.local_st import SentenceTransformerEmbedder
 from embedbench.providers.openai import OpenAIEmbedder
+from embedbench.providers.voyage import VoyageEmbedder
 
 PROVIDERS: dict[str, type[Embedder]] = {
     "openai": OpenAIEmbedder,
+    "voyage": VoyageEmbedder,
+    "cohere": CohereEmbedder,
     "sentence_transformers": SentenceTransformerEmbedder,
 }
 
